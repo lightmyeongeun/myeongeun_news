@@ -82,3 +82,9 @@ const searchKeywords=async()=>{
     //키워드 - 2. 
     newsData()
 }
+
+input.addEventListener("keydown", function (event) {
+    if (event.keyCode === 13) {
+      searchKeywords(event);
+    }
+});//enter키
