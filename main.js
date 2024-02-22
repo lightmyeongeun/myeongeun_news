@@ -20,8 +20,7 @@ getLatestNews()//api 불러오기
 const render=()=>{
     const newsHTML=newsList.map(news=>`<div class="row news">
     <div class="col-lg-4">
-        <img class="news_img_size" src="${news.urlToImage || "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRqEWgS0uxxEYJ0PsOb2OgwyWvC0Gjp8NUdPw&usqp=CAU"
-    }" />
+        <img class="news_img_size" src="${news.urlToImage}" onerror="imgError(this)">
     </div>
     <div class="col-lg-8">
         <h2>${news.title}</h2>
@@ -56,8 +55,11 @@ const closeNav = () => {
     document.getElementById("mySidenav").style.width = "0";
 }; // 반응형 사이드 - 복습 필요!!*
 
-
-
+//빈 이미지 함수
+const imgError=(image)=>{
+    image.onerror=null;
+    image.src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRqEWgS0uxxEYJ0PsOb2OgwyWvC0Gjp8NUdPw&usqp=CAU"
+}
 
 //카테고리 - 1. 버튼틀에 클릭이벤트 주기
 const menus=document.querySelectorAll(".menus button")//여러개 한꺼번에 가져오기
