@@ -1,7 +1,6 @@
 const API_KEY=[`220f91ed65214e4c99148f77e7370d6c`]
 let newsList=[]
 
-
 const getLatestNews=async()=>{
     const url=new URL(
         `https://myeongeunnews.netlify.app/top-headlines?country=kr`)
@@ -53,3 +52,39 @@ const closeNav = () => {
     document.getElementById("mySidenav").style.width = "0";
 }; // 반응형 사이드 - 복습 필요!!*
 
+
+
+
+//카테고리 - 1. 버튼틀에 클릭이벤트 주기
+const menus=document.querySelectorAll(".menus button")//여러개 한꺼번에 가져오기
+menus.forEach(menu=>menu.addEventListener("click",(event)=>getNewsByCategory(event)))
+
+//카테고리 - 2. 카테고리별 뉴스 가져오기
+const getNewsByCategory=async(event)=>{
+    const category=event.target.textContent.toLowerCase()//소문자 간단하게 바꾸기!-ul 안건들고
+    console.log("category",category)
+    const url=new URL(`https://myeongeunnews.netlify.app/top-headlines?country=kr&category=${category}`)
+    //api키는 맨 마지막이 좋음!
+
+    const response=await fetch(url)
+    const data=await response.json()
+    console.log("data",data)
+    
+    newsList=data.articles
+    render()
+    //카테고리 - 3. 그 뉴스를 보여주기 render()
+}
+
+//키워드 - 1. 
+const searchKeywords=async()=>{
+    const keywords=document.getElementById("search_input").value
+    console.log("keywords",keywords)
+    const url=new URL(`https://myeongeunnews.netlify.app/top-headlines?country=kr&q=${keywords}`)
+    
+    const response=await fetch(url)
+    const data=await response.json()
+    console.log("data",data)
+
+    newsList=data.articles
+    render()
+}
