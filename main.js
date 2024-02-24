@@ -3,8 +3,17 @@ let newsList=[]
 let url=new URL(`https://myeongeunnews.netlify.app/top-headlines?country=kr`)
 // `https://newsapi.org/v2/top-headlines?country=us&apiKey=${API_KEY}`)
 
+let totalResults=0
+let page=1//계속 1일수 없고 유동적으로 바꿔야함
+const pageSize=10 //고정되는 값
+const groupSize=5 //고정되는 값
+
 const newsData=async()=>{
     try{
+        //url호출 전에 page정보를 줘야함:받은 url뒤에 pageSize,page뒤에 추가하기
+        url.searchParams.set("page",page)//=>  &page=page
+        url.searchParams.set("pageSize",pageSize)
+        
         const response = await fetch(url)
         const data=await response.json()
         if(response.status==200){//api 값이 200(정상)이 아닐때 에러메세지
@@ -12,7 +21,9 @@ const newsData=async()=>{
                 throw new Error("No result for this search")
             }//검색어 일치 아닐때 에러메세지 => 이게 아니면 다시 흘러감
             newsList=data.articles
+            totalResults=data.totalResults
             render()
+            paginationRender()
         }else{
             throw new Error(data,message)
         }
@@ -50,14 +61,14 @@ const render=()=>{
     <div class="col-lg-4">
         <img class="news_img_size" src="${news.urlToImage}" onerror="imgError(this)">
     </div>
-    <div class="col-lg-8">
-        <h2>${news.title}</h2>
+    <div class="text_area col-lg-8">
+        <h2 class="news_title">${news.title}</h2>
         <p>${news.description==null || news.description==""
         ? "내용없음"
         : news.description.length > 200
         ? news.description.substring(0,200)+"..."
         : news.description}</p>
-        <div>${news.source.name || "no source"} ${moment(news.publishedAt).startOf('day').fromNow()}</div>
+        <div class="end_text">${news.source.name || "no source"} ${moment(news.publishedAt).startOf('day').fromNow()}</div>
     </div>
 </div>`).join("")
     document.getElementById("news_board").innerHTML=newsHTML
@@ -92,8 +103,9 @@ const imgError=(image)=>{
 }
 
 //카테고리 - 1. 버튼틀에 클릭이벤트 주기
-const menus=document.querySelectorAll(".menus button")//여러개 한꺼번에 가져오기
-menus.forEach(menu=>menu.addEventListener("click",(event)=>getNewsByCategory(event)))
+let menus = document.querySelectorAll("#menu-list button");
+menus.forEach(menu=>menu.addEventListener("click",(event)=>getNewsByCategory(event))
+)
 
 //카테고리 - 2. 카테고리별 뉴스 가져오기
 const getNewsByCategory=async(event)=>{
@@ -119,3 +131,45 @@ input.addEventListener("keydown", function (event) {
       searchKeywords(event);
     }
 });
+
+
+
+
+const paginationRender=()=>{
+    //totalResult
+    //page
+    //pageSize
+    //groupSize
+    const totalPages=Math.ceil(totalResults/pageSize)
+    //totalPage
+    const pageGroup=Math.ceil(page/groupSize)
+    //pageGroup
+    
+    let lastPage=pageGroup*groupSize
+    // 마지막 페이지 그룹이 그룹사이즈보다 작으면? lastPage=totalPage
+    if(lastPage>totalPages){
+        lastPage=totalPages//하지만 -1이나 0항목이 나오기 시작함(5개씩 보여줘야하는 강박으로 인함)
+    }//+ firstPage 관리 필요
+
+    //lastPage
+    const firstPage=
+        lastPage-(groupSize-1)<=0? 1:lastPage-(groupSize-1)//0보다 작으면 1로 표시, 아니면 원래 했던거 그대로하기
+    //firstPage
+    
+    let paginationHTML=``//숫자만 알기 떄문에 배열이 아님(첫번째, 마지막 수만 알고 있기 때문)
+
+    for(let i=firstPage;i<=lastPage;i++){
+        paginationHTML+=`<li class="page-item ${i===page?"active":""}" onclick="moveToPage(${i})"><a class="page-link">${i}</a></li>`
+    }//버튼 만들기(1~5페이지 노출)
+    //`<li class="page-item"><a class="page-link" href="#">${i}</a></li>`= 기능은 없고 틀만 있는것
+    document.querySelector(".pagination").innerHTML=paginationHTML
+    
+}
+
+const moveToPage=(pageNum)=>{
+    console.log("moveToPage",pageNum)//url 호출 필요!
+    page=pageNum
+    newsData()//pageNum주기
+}
+
+
