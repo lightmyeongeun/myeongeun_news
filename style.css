@@ -67,10 +67,11 @@
     .icon_bar .hide{display: inline-block;}
     .board_area{border-top: 4px double #000;}
     .news{padding-top:2em;}
-    .news_img_size{width: 100%;}
+    .center_img{text-align: center;}
     .head_line{padding-bottom: 2em;}
     .text_area{padding-top: 20px;text-align: center;}
     .news_title{font-size: 20px;word-break: keep-all;}
     .text_area p{font-size: 14px;}
     .end_text{font-size: 12px;}
 }
+

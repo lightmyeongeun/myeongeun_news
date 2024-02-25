@@ -58,7 +58,7 @@ getLatestNews()//api 불러오기
 
 const render=()=>{
     const newsHTML=newsList.map(news=>`<div class="row news">
-    <div class="col-lg-4">
+    <div class="center_img col-lg-4">
         <img class="news_img_size" src="${news.urlToImage}" onerror="imgError(this)">
     </div>
     <div class="text_area col-lg-8">
@@ -133,8 +133,6 @@ input.addEventListener("keydown", function (event) {
 });
 
 
-
-
 const paginationRender=()=>{
     //totalResult
     //page
@@ -155,13 +153,34 @@ const paginationRender=()=>{
     const firstPage=
         lastPage-(groupSize-1)<=0? 1:lastPage-(groupSize-1)//0보다 작으면 1로 표시, 아니면 원래 했던거 그대로하기
     //firstPage
-    
-    let paginationHTML=``//숫자만 알기 떄문에 배열이 아님(첫번째, 마지막 수만 알고 있기 때문)
+    let paginationHTML=[]
+   if(firstPage>=6){
+        paginationHTML=`
+        <li class="page-item" onclick="moveToPage(1)">
+            <a class="page-link" aria-label="Previous">
+                <span aria-hidden="true">&lt&lt</span>
+            </a></li>
+        <li class="page-item" onclick="moveToPage(${page-1})">
+            <a class="page-link">&lt</a>
+        </li>`
+    }        
+    //숫자만 알기 떄문에 배열이 아님(첫번째, 마지막 수만 알고 있기 때문)
 
     for(let i=firstPage;i<=lastPage;i++){
         paginationHTML+=`<li class="page-item ${i===page?"active":""}" onclick="moveToPage(${i})"><a class="page-link">${i}</a></li>`
     }//버튼 만들기(1~5페이지 노출)
     //`<li class="page-item"><a class="page-link" href="#">${i}</a></li>`= 기능은 없고 틀만 있는것
+    if(lastPage<totalPages){
+        paginationHTML+=`
+        <li class="page-item" onclick="moveToPage(${page+1})">
+            <a class="page-link">&gt</a>
+        </li>
+        <li class="page-item" onclick="moveToPage(${totalPages})">
+            <a class="page-link" aria-label="Next">
+                <span aria-hidden="true">&gt&gt</span>
+            </a>
+        </li>`
+    }        
     document.querySelector(".pagination").innerHTML=paginationHTML
     
 }
@@ -172,4 +191,8 @@ const moveToPage=(pageNum)=>{
     newsData()//pageNum주기
 }
 
-
+let last = pageGroup*5
+if(last>totalPages){
+    last=totalPages
+}
+let first = last-4<=0?1:last-4
